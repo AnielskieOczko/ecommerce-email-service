@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: ecommerce-email-service
+  config:
+    activate:
+      on-profile: dev  # Default profile for development
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: admin
+    password: admin
+  mail:
+    host: mailhog     # MailHog service name in Docker network
+    port: 1025        # MailHog SMTP port
+    properties:
+      smtp:
+        auth: false   # Disabled for MailHog
+        starttls:
+          enable: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod  # Production profile
+  mail:
+    host: smtp.yourprovider.com
+    port: 587
+    username: ${EMAIL_USER}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enabled: true
+
+thymeleaf:
+  prefix: classpath:/email-templates/
+  suffix: .html
+  cache: false
