@@ -15,6 +15,11 @@ public class RabbitMQConfig {
     public static final String EMAIL_QUEUE = "email.queue";
     public static final String ROUTING_KEY = "email.routing.key";
 
+    // Email notification queue (for sending status back)
+    public static final String NOTIFICATION_EXCHANGE = "email.notification.exchange";
+    public static final String NOTIFICATION_QUEUE = "email.notification.queue";
+    public static final String NOTIFICATION_ROUTING_KEY = "email.notification.routing.key";
+
     @Bean
     public TopicExchange emailExchange() {
         return new TopicExchange(EMAIL_EXCHANGE, true, false);
@@ -26,10 +31,27 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding binding() {
+    public Binding emailBinding() {
         return BindingBuilder.bind(emailQueue())
                 .to(emailExchange())
                 .with(ROUTING_KEY);
+    }
+
+    @Bean
+    TopicExchange notificationExchange() {
+        return new TopicExchange(NOTIFICATION_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Queue notificationQueue() {
+        return new Queue(NOTIFICATION_QUEUE, true);
+    }
+
+    @Bean
+    public Binding notificationBinding() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(notificationExchange())
+                .with(NOTIFICATION_ROUTING_KEY);
     }
 
     @Bean
