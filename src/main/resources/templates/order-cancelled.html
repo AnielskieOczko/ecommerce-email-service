@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
+    <title>Order Cancelled</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,6 +21,13 @@
         .logo {
             max-width: 150px;
             height: auto;
+        }
+        .message-box {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff4f4;
+            border-left: 4px solid #ff6b6b;
+            border-radius: 3px;
         }
         .order-details {
             margin: 20px 0;
@@ -41,11 +48,6 @@
         .order-items th {
             background-color: #f2f2f2;
         }
-        .total {
-            text-align: right;
-            font-weight: bold;
-            margin-top: 20px;
-        }
         .footer {
             margin-top: 30px;
             padding-top: 20px;
@@ -54,43 +56,51 @@
             font-size: 12px;
             color: #777;
         }
-        .shipping-info {
+        .help-section {
             margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 5px;
         }
-        .thank-you {
-            text-align: center;
-            margin: 30px 0;
-            font-size: 18px;
-            color: #4CAF50;
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Order Confirmation</h1>
-        <p>Thank you for your order!</p>
+        <h1>Order Cancellation</h1>
     </div>
 
     <p>Hello <span th:text="${customer != null ? (customer.fullName() != null ? customer.fullName() : customer.email) : 'Valued Customer'}">Customer</span>,</p>
 
-    <p>We're pleased to confirm that your order has been received and is being processed.</p>
+    <div class="message-box">
+        <p>We're writing to confirm that your order has been cancelled as requested.</p>
+        <p th:if="${additionalData != null && additionalData.cancellationReason != null}">
+            <strong>Reason for cancellation:</strong> <span th:text="${additionalData.cancellationReason}">Out of stock</span>
+        </p>
+    </div>
 
     <div class="order-details">
         <h2>Order Details</h2>
         <p><strong>Order Number:</strong> <span th:text="${orderNumber != null ? orderNumber : orderId}">ORD-12345</span></p>
         <p><strong>Order Date:</strong> <span th:text="${#temporals.format(orderDate, 'MMMM dd, yyyy')}">January 1, 2025</span></p>
-        <p><strong>Order Status:</strong> <span th:text="${orderStatus}">CONFIRMED</span></p>
-        <p th:if="${paymentMethod != null}"><strong>Payment Method:</strong> <span th:text="${paymentMethod}">CREDIT_CARD</span></p>
+        <p><strong>Cancellation Date:</strong> <span th:text="${#temporals.format(timestamp, 'MMMM dd, yyyy')}">January 2, 2025</span></p>
     </div>
 
-    <h2>Order Summary</h2>
+    <h2>Cancelled Items</h2>
     <table class="order-items">
         <thead>
             <tr>
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Price</th>
-                <th>Total</th>
             </tr>
         </thead>
         <tbody>
@@ -98,30 +108,25 @@
                 <td th:text="${item.productName}">Product Name</td>
                 <td th:text="${item.quantity}">1</td>
                 <td th:text="${item.unitPrice != null ? (item.unitPrice.amount + ' ' + item.unitPrice.currencyCode) : ''}">$10.00</td>
-                <td th:text="${item.totalPrice != null ? (item.totalPrice.amount + ' ' + item.totalPrice.currencyCode) : ''}">$10.00</td>
             </tr>
         </tbody>
     </table>
 
-    <div class="total">
-        <p>Total: <span th:text="${totalAmount != null ? (totalAmount.amount + ' ' + totalAmount.currencyCode) : ''}">$10.00</span></p>
+    <div th:if="${additionalData != null && additionalData.refundAmount != null}" class="order-details">
+        <h2>Refund Information</h2>
+        <p><strong>Refund Amount:</strong> <span th:text="${additionalData.refundAmount}">$100.00</span></p>
+        <p><strong>Refund Method:</strong> <span th:text="${additionalData.refundMethod != null ? additionalData.refundMethod : 'Original payment method'}">Original payment method</span></p>
+        <p>Please note that it may take 5-10 business days for the refund to appear in your account, depending on your payment provider.</p>
     </div>
 
-    <div class="shipping-info" th:if="${shippingAddress != null}">
-        <h2>Shipping Information</h2>
-        <p><strong>Shipping Method:</strong> <span th:text="${shippingMethod != null ? shippingMethod : 'Standard Shipping'}">Standard Shipping</span></p>
-        <p><strong>Shipping Address:</strong></p>
-        <p th:text="${shippingAddress.street}">123 Main St</p>
-        <p th:text="${shippingAddress.city + ', ' + shippingAddress.zipCode}">City, 12345</p>
-        <p th:text="${shippingAddress.country}">Country</p>
-    </div>
-
-    <div class="thank-you">
-        <p>Thank you for shopping with us!</p>
+    <div class="help-section">
+        <h2>Need Help?</h2>
+        <p>If you have any questions about this cancellation or would like to place a new order, our customer service team is here to help.</p>
+        <p>You can reply to this email or contact us through our website.</p>
     </div>
 
     <div class="footer">
-        <p>If you have any questions about your order, please contact our customer service team.</p>
+        <p>We hope to serve you again soon!</p>
         <p>&copy; 2025 Your Ecommerce Store. All rights reserved.</p>
     </div>
 </body>
